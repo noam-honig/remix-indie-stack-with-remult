@@ -11,10 +11,10 @@ export function withRemult<args extends ActionArgs, result>(
   what: (args: args) => result
 ) {
   return (args: args) => {
-    return new Promise<result>(async (res, reject) => {
+    return new Promise<result>(async (resolve, reject) => {
       api.withRemult(args.request, undefined!, async () => {
         try {
-          res(await what(args));
+          resolve(await what(args));
         } catch (error: any) {
           reject(error);
         }
