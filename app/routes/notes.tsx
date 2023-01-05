@@ -1,16 +1,14 @@
-import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Form, Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
-
-import { requireUserId } from "~/session.server";
 import { useUser } from "~/utils";
-import { getNoteListItems } from "~/models/note.server";
+import { remult } from "remult";
+import { Note } from "../models/note";
+import { withRemult } from "../../remult-specific/api";
 
-export async function loader({ request }: LoaderArgs) {
-  const userId = await requireUserId(request);
-  const noteListItems = await getNoteListItems({ userId });
+export const loader = withRemult(async () => {
+  const noteListItems = await remult.repo(Note).find();
   return json({ noteListItems });
-}
+});
 
 export default function NotesPage() {
   const data = useLoaderData<typeof loader>();

@@ -1,36 +1,24 @@
-import type { ActionArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { ActionArgs, json } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 import * as React from "react";
+import { remult } from "remult";
 
-import { createNote } from "~/models/note.server";
-import { requireUserId } from "~/session.server";
+import { withRemult } from "../../../remult-specific/api";
+import { Note } from "../../models/note";
 
-export async function action({ request }: ActionArgs) {
-  const userId = await requireUserId(request);
-
+export const action = withRemult(async ({ request }: ActionArgs) => {
   const formData = await request.formData();
-  const title = formData.get("title");
-  const body = formData.get("body");
-
-  if (typeof title !== "string" || title.length === 0) {
-    return json(
-      { errors: { title: "Title is required", body: null } },
-      { status: 400 }
-    );
+  try {
+    const newNote = await remult.repo(Note).insert({
+      title: formData.get("title") as string,
+      body: formData.get("body") as string,
+    });
+    return redirect(`/notes/${newNote.id}`);
+  } catch (error: any) {
+    return json({ errors: error.modelState }, { status: 400 });
   }
-
-  if (typeof body !== "string" || body.length === 0) {
-    return json(
-      { errors: { title: null, body: "Body is required" } },
-      { status: 400 }
-    );
-  }
-
-  const note = await createNote({ title, body, userId });
-
-  return redirect(`/notes/${note.id}`);
-}
+});
 
 export default function NewNotePage() {
   const actionData = useActionData<typeof action>();
