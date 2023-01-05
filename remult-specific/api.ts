@@ -1,11 +1,15 @@
 import { createRemultServer } from "remult/server";
-import { requireUserId } from "../app/session.server";
+import { getUserId } from "../app/session.server";
 import { Note } from "../app/models/note";
 import type { ActionArgs } from "@remix-run/node";
 
 export const api = createRemultServer<Request>({
   entities: [Note],
-  getUser: async (request) => ({ id: await requireUserId(request) }),
+  getUser: async (request) => {
+    let id = await getUserId(request);
+    if (id) return { id };
+    return undefined!;
+  },
 });
 export function withRemult<args extends ActionArgs, result>(
   what: (args: args) => result

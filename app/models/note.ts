@@ -1,6 +1,7 @@
-import { Entity, Fields, remult, Validators } from "remult";
+import { Allow, Entity, Fields, remult, Validators } from "remult";
 
 @Entity<Note>("notes", {
+  allowApiCrud: Allow.authenticated,
   // Always filter by current user
   backendPrefilter: () => ({
     userId: remult.user?.id || "no",
