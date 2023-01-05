@@ -1,5 +1,6 @@
 import { PassThrough } from "stream";
-import { EntryContext, json } from "@remix-run/node";
+import type { EntryContext} from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { Response } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import isbot from "isbot";
