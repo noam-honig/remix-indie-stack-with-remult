@@ -2,8 +2,6 @@ import { createRemultServer } from "remult/server";
 import { getUserId, requireUserId } from "../app/session.server";
 import { Note } from "../app/models/note";
 import type { ActionArgs} from "@remix-run/node";
-import { redirect } from "@remix-run/node";
-import { remult } from "remult";
 
 export const api = createRemultServer<Request>({
   entities: [Note],
