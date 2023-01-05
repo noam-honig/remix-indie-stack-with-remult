@@ -1,30 +1,25 @@
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, useCatch, useLoaderData } from "@remix-run/react";
+import { remult } from "remult";
 import invariant from "tiny-invariant";
+import { withRemult } from "../../../remult-specific/api";
+import { Note } from "../../models/note";
 
-import { deleteNote, getNote } from "~/models/note.server";
-import { requireUserId } from "~/session.server";
-
-export async function loader({ request, params }: LoaderArgs) {
-  const userId = await requireUserId(request);
+export const loader = withRemult(async ({ params }: LoaderArgs) => {
   invariant(params.noteId, "noteId not found");
-
-  const note = await getNote({ userId, id: params.noteId });
+  const note = await remult.repo(Note).findId(params.noteId);
   if (!note) {
     throw new Response("Not Found", { status: 404 });
   }
   return json({ note });
-}
+});
 
-export async function action({ request, params }: ActionArgs) {
-  const userId = await requireUserId(request);
+export const action = withRemult(async ({ params }: ActionArgs) => {
   invariant(params.noteId, "noteId not found");
-
-  await deleteNote({ userId, id: params.noteId });
-
+  await remult.repo(Note).delete(params.noteId);
   return redirect("/notes");
-}
+});
 
 export default function NoteDetailsPage() {
   const data = useLoaderData<typeof loader>();
