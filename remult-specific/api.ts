@@ -10,8 +10,8 @@ export const api = createRemultServer<Request>({
 export function withRemult<args extends ActionArgs, result>(
   what: (args: args) => result
 ) {
-  return (args: args) => {
-    return new Promise<result>(async (resolve, reject) => {
+  return (args: args) =>
+    new Promise<result>(async (resolve, reject) => {
       api.withRemult(args.request, undefined!, async () => {
         try {
           resolve(await what(args));
@@ -20,5 +20,4 @@ export function withRemult<args extends ActionArgs, result>(
         }
       });
     });
-  };
 }
