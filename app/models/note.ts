@@ -6,6 +6,9 @@ import { Allow, Entity, Fields, remult, Validators } from "remult";
   backendPrefilter: () => ({
     userId: remult.user?.id || "no",
   }),
+  defaultOrderBy: {
+    updatedAt: "desc",
+  },
 })
 export class Note {
   @Fields.uuid()
